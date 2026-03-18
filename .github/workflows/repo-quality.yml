@@ -32,7 +32,7 @@ jobs:
         uses: raven-actions/actionlint@v2
 
       - name: Audit workflow security
-        uses: zizmorcore/zizmor-action@v0.1.2
+        uses: zizmorcore/zizmor-action@v0.5.2
 
   secret-scan:
     name: Secret Scan
