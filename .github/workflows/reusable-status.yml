@@ -1,0 +1,17 @@
+name: Required Status Summary
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report required checks
+        run: |
+          echo "Repository baseline checks are active."
+          echo "Add stack-specific unit/integration/coverage jobs once application code exists."
