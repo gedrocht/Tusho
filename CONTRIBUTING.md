@@ -13,14 +13,15 @@
 Before opening a pull request, aim to run:
 
 ```bash
-cmake -S . -B build -G Ninja -DTUSHO_BUILD_TESTS=ON
-cmake --build build
-ctest --test-dir build --output-on-failure
+./scripts/build.sh --run-tests
 composer install
 composer run lint:php
 composer run analyse:php
 composer run test:php
 ```
+
+If you prefer the lower-level commands, the build helper above expands to the
+standard CMake configure, build, and CTest steps.
 
 ## Pull request expectations
 

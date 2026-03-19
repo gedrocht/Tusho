@@ -24,6 +24,7 @@ The project is designed to be understandable to beginners without giving up engi
 |-- src/                              # C++ crawler implementation
 |-- tests/                            # C++ unit and integration tests
 |-- web/                              # PHP web application, XML config, and PHP tests
+|-- scripts/                          # Linux helper scripts for building and quality checks
 |-- docs/                             # GitHub Pages documentation source
 |-- wiki/                             # DokuWiki-based beginner wiki setup
 |-- .github/workflows/                # CI, security, docs, and release checks
@@ -61,8 +62,16 @@ sudo apt-get install -y build-essential cmake ninja-build libsqlite3-dev php-cli
 ### 2. Build the crawler
 
 ```bash
+./scripts/build.sh --run-tests
+```
+
+If you want the raw CMake commands instead of the helper script, the equivalent
+build is:
+
+```bash
 cmake -S . -B build -G Ninja -DTUSHO_BUILD_TESTS=ON
 cmake --build build
+ctest --test-dir build --output-on-failure
 ```
 
 ### 3. Run a first crawl
@@ -136,6 +145,12 @@ The repository is set up to enforce:
 - dependency review
 - OpenSSF Scorecards
 - documentation builds for GitHub Pages
+
+Useful helper scripts:
+
+- `./scripts/build.sh` configures and builds the Linux crawler.
+- `./scripts/build.sh --run-tests` builds and then runs the C++ test suite.
+- `./scripts/build.sh --clang --sanitizers --clean` prepares a fresh Clang sanitizer build.
 
 ## Documentation layers
 
