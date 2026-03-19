@@ -52,51 +52,100 @@ For each discovered file system entry, Tusho stores:
 
 ## Quick start for Linux
 
-### 1. Install system packages
+If you want the simplest possible local workflow, use these five commands in
+order:
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y build-essential cmake ninja-build libsqlite3-dev php-cli php-xml php-sqlite3 composer
+./scripts/setup_linux.sh
+mkdir -p /tmp/tusho-demo && touch /tmp/tusho-demo/example.txt
+./scripts/build.sh --run-tests
+./scripts/run_crawler.sh --database-path /tmp/tusho-demo/catalog.sqlite3 --crawl-root /tmp/tusho-demo --log-file-path /tmp/tusho-demo/crawler.jsonl --rebuild-database
+./scripts/run_web_application.sh --database-path /tmp/tusho-demo/catalog.sqlite3
 ```
 
-### 2. Build the crawler
+Then open [http://127.0.0.1:8080/index.php](http://127.0.0.1:8080/index.php).
+
+## Beginner workflow for Linux
+
+### 1. Install prerequisites
+
+```bash
+./scripts/setup_linux.sh
+```
+
+This script installs the Linux packages needed for:
+
+- building the C++ crawler
+- using SQLite locally
+- running the PHP web application
+- installing the PHP development tools from `composer.lock`
+
+### 2. Build the crawler and run the C++ tests
 
 ```bash
 ./scripts/build.sh --run-tests
 ```
 
-If you want the raw CMake commands instead of the helper script, the equivalent
-build is:
+### 3. Create a tiny demo directory
+
+```bash
+mkdir -p /tmp/tusho-demo
+touch /tmp/tusho-demo/example.txt
+mkdir -p /tmp/tusho-demo/folder
+```
+
+### 4. Run the crawler
+
+```bash
+./scripts/run_crawler.sh \
+  --database-path /tmp/tusho-demo/catalog.sqlite3 \
+  --crawl-root /tmp/tusho-demo \
+  --log-file-path /tmp/tusho-demo/crawler.jsonl \
+  --rebuild-database
+```
+
+### 5. Start the web application
+
+```bash
+./scripts/run_web_application.sh --database-path /tmp/tusho-demo/catalog.sqlite3
+```
+
+This script generates a local XML configuration file for you automatically, so
+you do not need to edit the tracked config file by hand for a local demo.
+
+### 6. Run the full local test workflow
+
+```bash
+./scripts/test.sh
+```
+
+This script runs:
+
+- the C++ build
+- the C++ CTest suite
+- PHP coding standards
+- PHP static analysis
+- PHPUnit
+
+### 7. Use the raw commands if you want to learn what the scripts are doing
+
+If you use the raw PHP server command, make sure the web application points at
+your local database first. The helper script does that for you automatically,
+but the raw command path expects either:
+
+- a manually edited `web/config/application_configuration.xml`, or
+- a `TUSHO_WEB_CONFIGURATION_PATH` environment variable that points at a local XML config
 
 ```bash
 cmake -S . -B build -G Ninja -DTUSHO_BUILD_TESTS=ON
 cmake --build build
 ctest --test-dir build --output-on-failure
-```
-
-### 3. Run a first crawl
-
-```bash
-./build/tusho_crawler \
-  --database-path /var/lib/tusho/catalog.sqlite3 \
-  --crawl-root /home \
-  --log-file-path /var/log/tusho/crawler.jsonl \
-  --rebuild-database
-```
-
-### 4. Install PHP dependencies
-
-```bash
 composer install
-```
-
-### 5. Launch the web application locally
-
-```bash
+composer run lint:php
+composer run analyse:php
+composer run test:php
 php -S 127.0.0.1:8080 -t web/public
 ```
-
-Then open [http://127.0.0.1:8080/index.php](http://127.0.0.1:8080/index.php).
 
 ## XML configuration
 
@@ -148,9 +197,12 @@ The repository is set up to enforce:
 
 Useful helper scripts:
 
+- `./scripts/setup_linux.sh` installs the beginner-friendly Linux prerequisites.
 - `./scripts/build.sh` configures and builds the Linux crawler.
 - `./scripts/build.sh --run-tests` builds and then runs the C++ test suite.
-- `./scripts/build.sh --clang --sanitizers --clean` prepares a fresh Clang sanitizer build.
+- `./scripts/run_crawler.sh` launches the built crawler executable.
+- `./scripts/run_web_application.sh --database-path /tmp/tusho-demo/catalog.sqlite3` starts the PHP interface with a generated local XML config.
+- `./scripts/test.sh` runs the local build, C++ tests, PHP quality checks, and PHPUnit.
 
 ## Documentation layers
 

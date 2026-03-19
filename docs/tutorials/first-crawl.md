@@ -5,8 +5,7 @@ This tutorial walks through a first small scan so you can understand what the cr
 ## Step 1: Build the crawler
 
 ```bash
-cmake -S . -B build -G Ninja -DTUSHO_BUILD_TESTS=ON
-cmake --build build
+./scripts/build.sh --run-tests
 ```
 
 ## Step 2: Choose a safe starting directory
@@ -22,7 +21,7 @@ mkdir -p /tmp/tusho-demo/folder
 ## Step 3: Run the crawler
 
 ```bash
-./build/tusho_crawler \
+./scripts/run_crawler.sh \
   --database-path /tmp/tusho-demo/catalog.sqlite3 \
   --crawl-root /tmp/tusho-demo \
   --log-file-path /tmp/tusho-demo/crawler.jsonl \

@@ -2,7 +2,9 @@
 
 ## Step 1: Point the XML configuration at your database
 
-Edit `web/config/application_configuration.xml` so `databasePath` matches the SQLite file created by the crawler.
+The simplest beginner path is to let the helper script generate a local XML
+configuration automatically. That means you do not have to edit the tracked XML
+file for a local demo.
 
 ## Step 2: Install PHP dependencies
 
@@ -13,7 +15,7 @@ composer install
 ## Step 3: Start a local PHP server
 
 ```bash
-php -S 127.0.0.1:8080 -t web/public
+./scripts/run_web_application.sh --database-path /tmp/tusho-demo/catalog.sqlite3
 ```
 
 ## Step 4: Open the web interface

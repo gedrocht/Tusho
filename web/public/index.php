@@ -11,9 +11,15 @@ use TushoWeb\XmlDocumentRenderer;
 
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
+$configurationFilePathFromEnvironment = getenv('TUSHO_WEB_CONFIGURATION_PATH');
+$configurationFilePath = is_string($configurationFilePathFromEnvironment)
+    && $configurationFilePathFromEnvironment !== ''
+    ? $configurationFilePathFromEnvironment
+    : dirname(__DIR__) . '/config/application_configuration.xml';
+
 $applicationConfigurationLoader = new ApplicationConfigurationLoader();
 $applicationConfiguration = $applicationConfigurationLoader->load(
-    dirname(__DIR__) . '/config/application_configuration.xml',
+    $configurationFilePath,
     dirname(__DIR__) . '/config/application_configuration.xsd',
 );
 

@@ -9,6 +9,7 @@ theme:
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
+  - Local Workflow: local-workflow.md
   - Tutorials:
       - First Crawl: tutorials/first-crawl.md
       - Web Search: tutorials/web-search.md
