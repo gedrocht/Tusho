@@ -21,31 +21,26 @@ namespace tusho
 class StructuredLogger
 {
 public:
-  explicit StructuredLogger(const std::filesystem::path &log_file_path);
+  explicit StructuredLogger(const std::filesystem::path& log_file_path);
 
-  void log_information(
-    const std::string &message_text,
-    const std::vector<std::pair<std::string, std::string>> &named_fields = {});
+  void log_information(const std::string& message_text,
+                       const std::vector<std::pair<std::string, std::string>>& named_fields = {});
 
-  void log_warning(
-    const std::string &message_text,
-    const std::vector<std::pair<std::string, std::string>> &named_fields = {});
+  void log_warning(const std::string& message_text,
+                   const std::vector<std::pair<std::string, std::string>>& named_fields = {});
 
-  void log_error(
-    const std::string &message_text,
-    const std::vector<std::pair<std::string, std::string>> &named_fields = {});
+  void log_error(const std::string& message_text,
+                 const std::vector<std::pair<std::string, std::string>>& named_fields = {});
 
 private:
   std::ofstream log_file_stream_;
   std::mutex write_mutex_;
 
-  static std::string create_escaped_json_string(const std::string &unescaped_text);
+  static std::string create_escaped_json_string(const std::string& unescaped_text);
   static std::string create_current_utc_timestamp_text();
 
-  void write_entry(
-    const std::string &severity_text,
-    const std::string &message_text,
-    const std::vector<std::pair<std::string, std::string>> &named_fields);
+  void write_entry(const std::string& severity_text, const std::string& message_text,
+                   const std::vector<std::pair<std::string, std::string>>& named_fields);
 };
 } // namespace tusho
 

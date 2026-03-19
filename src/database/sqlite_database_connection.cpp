@@ -4,7 +4,7 @@
 
 namespace tusho
 {
-SqliteDatabaseConnection::SqliteDatabaseConnection(const std::filesystem::path &database_file_path)
+SqliteDatabaseConnection::SqliteDatabaseConnection(const std::filesystem::path& database_file_path)
 {
   if (database_file_path.has_parent_path())
   {
@@ -15,8 +15,8 @@ SqliteDatabaseConnection::SqliteDatabaseConnection(const std::filesystem::path &
 
   if (open_result != SQLITE_OK || native_database_handle_ == nullptr)
   {
-    const std::string failure_message =
-      native_database_handle_ == nullptr ? "SQLite failed to open the database." : sqlite3_errmsg(native_database_handle_);
+    const std::string failure_message = native_database_handle_ == nullptr ? "SQLite failed to open the database."
+                                                                           : sqlite3_errmsg(native_database_handle_);
 
     if (native_database_handle_ != nullptr)
     {
@@ -41,14 +41,14 @@ SqliteDatabaseConnection::~SqliteDatabaseConnection()
   }
 }
 
-SqliteDatabaseConnection::SqliteDatabaseConnection(SqliteDatabaseConnection &&other_database_connection) noexcept
+SqliteDatabaseConnection::SqliteDatabaseConnection(SqliteDatabaseConnection&& other_database_connection) noexcept
+    : native_database_handle_(other_database_connection.native_database_handle_)
 {
-  native_database_handle_ = other_database_connection.native_database_handle_;
   other_database_connection.native_database_handle_ = nullptr;
 }
 
-SqliteDatabaseConnection &
-SqliteDatabaseConnection::operator=(SqliteDatabaseConnection &&other_database_connection) noexcept
+SqliteDatabaseConnection&
+SqliteDatabaseConnection::operator=(SqliteDatabaseConnection&& other_database_connection) noexcept
 {
   if (this != &other_database_connection)
   {
@@ -64,37 +64,34 @@ SqliteDatabaseConnection::operator=(SqliteDatabaseConnection &&other_database_co
   return *this;
 }
 
-sqlite3 *SqliteDatabaseConnection::native_handle() const noexcept
+sqlite3* SqliteDatabaseConnection::native_handle() const noexcept
 {
   return native_database_handle_;
 }
 
-void SqliteDatabaseConnection::execute_sql_statement(const std::string &sql_statement_text) const
+void SqliteDatabaseConnection::execute_sql_statement(const std::string& sql_statement_text) const
 {
-  char *error_message_buffer = nullptr;
+  char* error_message_buffer = nullptr;
 
   const int execution_result =
-    sqlite3_exec(native_database_handle_, sql_statement_text.c_str(), nullptr, nullptr, &error_message_buffer);
+      sqlite3_exec(native_database_handle_, sql_statement_text.c_str(), nullptr, nullptr, &error_message_buffer);
 
   if (execution_result != SQLITE_OK)
   {
     const std::string failure_message =
-      error_message_buffer == nullptr ? "SQLite failed to execute a SQL statement." : error_message_buffer;
+        error_message_buffer == nullptr ? "SQLite failed to execute a SQL statement." : error_message_buffer;
     sqlite3_free(error_message_buffer);
     throw std::runtime_error(failure_message);
   }
 }
 
-sqlite3_stmt *SqliteDatabaseConnection::prepare_statement(const std::string &sql_statement_text) const
+sqlite3_stmt* SqliteDatabaseConnection::prepare_statement(const std::string& sql_statement_text) const
 {
-  sqlite3_stmt *prepared_statement = nullptr;
+  sqlite3_stmt* prepared_statement = nullptr;
 
-  const int prepare_result = sqlite3_prepare_v2(
-    native_database_handle_,
-    sql_statement_text.c_str(),
-    static_cast<int>(sql_statement_text.size()),
-    &prepared_statement,
-    nullptr);
+  const int prepare_result =
+      sqlite3_prepare_v2(native_database_handle_, sql_statement_text.c_str(),
+                         static_cast<int>(sql_statement_text.size()), &prepared_statement, nullptr);
 
   if (prepare_result != SQLITE_OK)
   {

@@ -68,9 +68,13 @@ jobs:
         run: |
           cmake -S . -B build -G Ninja -DTUSHO_BUILD_TESTS=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
+      - name: Build for clang-tidy
+        run: cmake --build build
+
       - name: Run cppcheck
         run: |
-          cppcheck --std=c++20 --enable=all --inconclusive --error-exitcode=1 --inline-suppr --suppress=missingIncludeSystem include src tests
+          cppcheck --std=c++20 --enable=all --inconclusive --error-exitcode=1 --inline-suppr \
+            --suppress=missingIncludeSystem -I include -I tests include src tests
 
       - name: Run clang-tidy
         run: |
@@ -82,7 +86,9 @@ jobs:
             src/filesystem/file_system_crawler.cpp \
             src/logging/structured_logger.cpp \
             tests/unit/structured_logger_tests.cpp \
-            tests/integration/file_system_crawler_integration_tests.cpp
+            tests/unit/database_and_application_tests.cpp \
+            tests/integration/file_system_crawler_integration_tests.cpp \
+            tests/integration/crawler_command_line_integration_tests.cpp
 
   cpp-sanitizers:
     name: C++ Sanitizers
@@ -233,7 +239,7 @@ jobs:
           fi
 
       - name: Lint GitHub Actions
-        uses: rhysd/actionlint@v1
+        uses: raven-actions/actionlint@v2
 
       - name: Scan for secrets
         uses: gitleaks/gitleaks-action@v2
@@ -262,7 +268,9 @@ jobs:
           pip install mkdocs mkdocs-material
 
       - name: Build Doxygen API reference
-        run: doxygen docs/Doxyfile
+        run: |
+          mkdir -p build/doxygen
+          doxygen docs/Doxyfile
 
       - name: Build MkDocs site
         run: mkdocs build --strict

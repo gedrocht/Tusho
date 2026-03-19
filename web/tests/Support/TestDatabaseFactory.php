@@ -57,14 +57,16 @@ final class TestDatabaseFactory
         );
         self::executeStatementOrFail(
             $databaseConnection,
-            "INSERT INTO file_system_entries (
-                absolute_path, scan_run_identifier, parent_directory_path, entry_name, entry_type,
-                symbolic_link_target_path, permissions_octal_text, last_write_time_utc_text,
-                last_status_change_time_utc_text, file_size_bytes, owner_user_identifier,
-                owner_group_identifier, inode_number, device_number, hard_link_count, was_accessible
-             ) VALUES
-             ('/sample/alpha.txt', 1, '/sample', 'alpha.txt', 'file', '', '0644', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', 10, 1000, 1000, 1, 1, 1, 1),
-             ('/sample/beta', 1, '/sample', 'beta', 'directory', '', '0755', '2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', 0, 1000, 1000, 2, 1, 1, 1)"
+            "INSERT INTO file_system_entries ("
+            . "absolute_path, scan_run_identifier, parent_directory_path, entry_name, entry_type, "
+            . "symbolic_link_target_path, permissions_octal_text, last_write_time_utc_text, "
+            . "last_status_change_time_utc_text, file_size_bytes, owner_user_identifier, "
+            . "owner_group_identifier, inode_number, device_number, hard_link_count, was_accessible"
+            . ") VALUES "
+            . "('/sample/alpha.txt', 1, '/sample', 'alpha.txt', 'file', '', '0644', "
+            . "'2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', 10, 1000, 1000, 1, 1, 1, 1), "
+            . "('/sample/beta', 1, '/sample', 'beta', 'directory', '', '0755', "
+            . "'2026-01-01T00:00:00Z', '2026-01-01T00:00:00Z', 0, 1000, 1000, 2, 1, 1, 1)"
         );
 
         return $databasePath;

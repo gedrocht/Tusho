@@ -11,7 +11,7 @@ namespace tusho
 class CrawlerApplication
 {
 public:
-  int run(const RunConfiguration &run_configuration) const;
+  static int run(const RunConfiguration& run_configuration);
 };
 } // namespace tusho
 

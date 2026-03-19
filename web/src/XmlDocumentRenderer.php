@@ -34,8 +34,11 @@ final class XmlDocumentRenderer
     /**
      * @param list<array<string, mixed>> $directoryEntries
      */
-    public function renderDirectoryBrowseResults(string $siteTitle, string $directoryPath, array $directoryEntries): string
-    {
+    public function renderDirectoryBrowseResults(
+        string $siteTitle,
+        string $directoryPath,
+        array $directoryEntries,
+    ): string {
         return $this->renderEntryDocument(
             $siteTitle,
             'directoryBrowseResults',
@@ -72,7 +75,9 @@ final class XmlDocumentRenderer
             $entryElement = $xmlDocument->createElement('entry');
 
             foreach ($entryRow as $fieldName => $fieldValue) {
-                $entryElement->appendChild($xmlDocument->createElement((string) $fieldName, (string) $fieldValue));
+                $entryElement->appendChild(
+                    $xmlDocument->createElement((string) $fieldName, $this->stringifyValue($fieldValue))
+                );
             }
 
             $entriesElement->appendChild($entryElement);
@@ -82,5 +87,18 @@ final class XmlDocumentRenderer
         $xmlDocument->appendChild($rootElement);
 
         return (string) $xmlDocument->saveXML();
+    }
+
+    private function stringifyValue(mixed $rawValue): string
+    {
+        if ($rawValue === null) {
+            return '';
+        }
+
+        if (is_scalar($rawValue)) {
+            return (string) $rawValue;
+        }
+
+        return json_encode($rawValue, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '';
     }
 }

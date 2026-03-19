@@ -41,7 +41,9 @@ jobs:
           pip install mkdocs mkdocs-material
 
       - name: Build Doxygen API reference
-        run: doxygen docs/Doxyfile
+        run: |
+          mkdir -p build/doxygen
+          doxygen docs/Doxyfile
 
       - name: Build MkDocs site
         run: mkdocs build --strict

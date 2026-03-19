@@ -29,8 +29,12 @@ final class FileSystemCatalogRepository
         return [
             'entryCount' => $this->fetchSingleInteger('SELECT COUNT(*) FROM file_system_entries'),
             'scanRunCount' => $this->fetchSingleInteger('SELECT COUNT(*) FROM scan_runs'),
-            'directoryCount' => $this->fetchSingleInteger("SELECT COUNT(*) FROM file_system_entries WHERE entry_type = 'directory'"),
-            'fileCount' => $this->fetchSingleInteger("SELECT COUNT(*) FROM file_system_entries WHERE entry_type = 'file'"),
+            'directoryCount' => $this->fetchSingleInteger(
+                "SELECT COUNT(*) FROM file_system_entries WHERE entry_type = 'directory'"
+            ),
+            'fileCount' => $this->fetchSingleInteger(
+                "SELECT COUNT(*) FROM file_system_entries WHERE entry_type = 'file'"
+            ),
         ];
     }
 
@@ -40,10 +44,11 @@ final class FileSystemCatalogRepository
     public function fetchRecentScanRuns(int $maximumRowCount): array
     {
         $preparedStatement = $this->prepareStatementOrFail(
-            'SELECT scan_run_identifier, crawl_root_directory_path, started_at_utc, finished_at_utc, accessible_entry_count, inaccessible_entry_count
-             FROM scan_runs
-             ORDER BY scan_run_identifier DESC
-             LIMIT :maximumRowCount'
+            'SELECT scan_run_identifier, crawl_root_directory_path, started_at_utc, '
+            . 'finished_at_utc, accessible_entry_count, inaccessible_entry_count '
+            . 'FROM scan_runs '
+            . 'ORDER BY scan_run_identifier DESC '
+            . 'LIMIT :maximumRowCount'
         );
 
         $preparedStatement->bindValue(':maximumRowCount', $maximumRowCount, PDO::PARAM_INT);
@@ -60,16 +65,17 @@ final class FileSystemCatalogRepository
     public function searchEntries(string $searchPhrase, string $entryTypeFilter, int $maximumRowCount): array
     {
         $preparedStatement = $this->prepareStatementOrFail(
-            'SELECT absolute_path, parent_directory_path, entry_name, entry_type, file_size_bytes, permissions_octal_text, last_write_time_utc_text
-             FROM file_system_entries
-             WHERE (:entryTypeFilter = "" OR entry_type = :entryTypeFilter)
-               AND (
-                    :searchPhrase = ""
-                    OR absolute_path LIKE :searchPattern
-                    OR entry_name LIKE :searchPattern
-                   )
-             ORDER BY absolute_path ASC
-             LIMIT :maximumRowCount'
+            'SELECT absolute_path, parent_directory_path, entry_name, entry_type, '
+            . 'file_size_bytes, permissions_octal_text, last_write_time_utc_text '
+            . 'FROM file_system_entries '
+            . 'WHERE (:entryTypeFilter = "" OR entry_type = :entryTypeFilter) '
+            . 'AND ('
+            . '     :searchPhrase = "" '
+            . '     OR absolute_path LIKE :searchPattern '
+            . '     OR entry_name LIKE :searchPattern'
+            . ') '
+            . 'ORDER BY absolute_path ASC '
+            . 'LIMIT :maximumRowCount'
         );
 
         return $this->executeCatalogQuery(
@@ -86,11 +92,12 @@ final class FileSystemCatalogRepository
     public function browseDirectory(string $directoryPath, int $maximumRowCount): array
     {
         $preparedStatement = $this->prepareStatementOrFail(
-            'SELECT absolute_path, parent_directory_path, entry_name, entry_type, file_size_bytes, permissions_octal_text, last_write_time_utc_text
-             FROM file_system_entries
-             WHERE parent_directory_path = :directoryPath
-             ORDER BY entry_type DESC, entry_name ASC
-             LIMIT :maximumRowCount'
+            'SELECT absolute_path, parent_directory_path, entry_name, entry_type, '
+            . 'file_size_bytes, permissions_octal_text, last_write_time_utc_text '
+            . 'FROM file_system_entries '
+            . 'WHERE parent_directory_path = :directoryPath '
+            . 'ORDER BY entry_type DESC, entry_name ASC '
+            . 'LIMIT :maximumRowCount'
         );
 
         $preparedStatement->bindValue(':directoryPath', $directoryPath);
