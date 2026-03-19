@@ -1,11 +1,24 @@
 # Tusho
 
+[![Continuous Integration](https://github.com/gedrocht/Tusho/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/gedrocht/Tusho/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/gedrocht/Tusho/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/gedrocht/Tusho/actions/workflows/codeql.yml)
+[![Documentation Site](https://img.shields.io/website?url=https%3A%2F%2Fgedrocht.github.io%2FTusho%2F&label=docs)](https://gedrocht.github.io/Tusho/)
+[![OpenSSF Scorecards](https://github.com/gedrocht/Tusho/actions/workflows/scorecards.yml/badge.svg?branch=main)](https://github.com/gedrocht/Tusho/actions/workflows/scorecards.yml)
+[![License](https://img.shields.io/github/license/gedrocht/Tusho)](LICENSE)
+
 Tusho is a Linux-first file catalog system made of two parts:
 
 1. A lean C++ crawler that walks a Linux file system and stores file and directory metadata in SQLite.
 2. A PHP web application that uses XML configuration to search and browse that catalog as either HTML or XML.
 
 The project is designed to be understandable to beginners without giving up engineering discipline. Variable names are intentionally descriptive, source files are heavily documented, the repository ships with strict CI, and the documentation stack includes both API reference generation and a separate serveable wiki layer.
+
+## At a glance
+
+- Primary use case: catalog a Linux file tree, then search and browse it from a browser.
+- Core stack: C++20, SQLite, PHP 8.3, XML configuration, GitHub Actions.
+- Best starting point: `./scripts/setup_linux.sh`, then `./scripts/build.sh --run-tests`.
+- Hosted docs: [https://gedrocht.github.io/Tusho/](https://gedrocht.github.io/Tusho/)
 
 ## Project goals
 
