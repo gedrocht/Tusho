@@ -1,0 +1,34 @@
+{
+  "name": "tusho/file-catalog",
+  "description": "Linux file system catalog crawler with a PHP and XML search interface",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": "^8.3",
+    "ext-dom": "*",
+    "ext-libxml": "*",
+    "ext-pdo": "*",
+    "ext-pdo_sqlite": "*",
+    "ext-simplexml": "*"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^11.5",
+    "squizlabs/php_codesniffer": "^3.11"
+  },
+  "autoload": {
+    "psr-4": {
+      "TushoWeb\\": "web/src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "TushoWebTests\\": "web/tests/"
+    }
+  },
+  "scripts": {
+    "test:php": "phpunit --configuration phpunit.xml.dist",
+    "lint:php": "phpcs --standard=phpcs.xml.dist web/src web/public web/tests",
+    "analyse:php": "phpstan analyse --configuration=phpstan.neon.dist"
+  }
+}

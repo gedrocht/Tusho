@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/gedrocht/Tusho/security/advisories/new
+    about: Please report suspected vulnerabilities privately.
+  - name: Documentation and tutorials
+    url: https://gedrocht.github.io/Tusho/
+    about: Read the beginner docs and architecture guides before filing usage questions.

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php" cacheDirectory=".phpunit.cache">
+  <testsuites>
+    <testsuite name="Tusho Web Tests">
+      <directory>web/tests</directory>
+    </testsuite>
+  </testsuites>
+  <source>
+    <include>
+      <directory>web/src</directory>
+    </include>
+  </source>
+</phpunit>

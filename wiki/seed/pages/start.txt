@@ -1,0 +1,10 @@
+====== Tusho Beginner Wiki ======
+
+Welcome to the Tusho beginner wiki. This layer of documentation exists so that a new learner can understand the big picture before jumping into source files.
+
+===== Read This First =====
+
+  * [[beginner_tour|Beginner Tour]]
+  * [[crawler_explained|How the Crawler Works]]
+  * [[web_application_explained|How the Web Application Works]]
+  * [[quality_explained|Why the Quality Checks Matter]]

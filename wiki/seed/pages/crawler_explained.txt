@@ -1,0 +1,16 @@
+====== How the Crawler Works ======
+
+The crawler starts at one directory and walks downward.
+
+For each entry it tries to answer questions like these:
+
+  * What is the full path?
+  * Is it a file, a directory, or a symbolic link?
+  * What are the permissions?
+  * How large is it?
+  * Who owns it?
+  * When was it last changed?
+
+Those answers are turned into one database row.
+
+If an entry cannot be read, the crawler logs the problem and continues.

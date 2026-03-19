@@ -1,0 +1,14 @@
+====== Why the Quality Checks Matter ======
+
+Tusho uses many automated checks because this project is meant to stay understandable and safe as it grows.
+
+Some checks answer questions like:
+
+  * Did formatting drift?
+  * Did a warning appear in C++ code?
+  * Did a PHP type issue appear?
+  * Did test coverage drop too far?
+  * Did a workflow become risky?
+  * Did a secret accidentally get committed?
+
+The checks are not there to punish contributors. They are there to keep mistakes visible and cheap to fix.

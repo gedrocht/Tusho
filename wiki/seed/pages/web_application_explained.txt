@@ -1,0 +1,12 @@
+====== How the Web Application Works ======
+
+The web application does not scan the disk itself.
+
+Instead, it:
+
+  * reads an XML configuration file
+  * opens the SQLite database
+  * runs read-only queries
+  * renders the results as HTML or XML
+
+That means the web layer stays simple because the difficult discovery work was already done by the crawler.

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applicationConfiguration>
+  <siteTitle>Tusho File Catalog</siteTitle>
+  <databasePath>/var/lib/tusho/catalog.sqlite3</databasePath>
+  <webLogFilePath>/var/log/tusho/web-application.log</webLogFilePath>
+  <defaultPageSize>50</defaultPageSize>
+</applicationConfiguration>

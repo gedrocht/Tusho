@@ -1,0 +1,15 @@
+====== Beginner Tour ======
+
+Tusho is built from three ideas:
+
+  * Linux already knows a lot about files and directories.
+  * SQLite can store that knowledge in a single portable database file.
+  * PHP can read that database and show it in a browser.
+
+When you read the rest of this wiki, keep one simple picture in mind:
+
+  - The crawler discovers data.
+  - The database stores data.
+  - The web interface presents data.
+
+That is the whole system in one sentence.

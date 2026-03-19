@@ -1,0 +1,274 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  cpp-build-and-test:
+    name: C++ Build and Test (${{ matrix.compiler }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - gcc
+          - clang
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install C++ dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang ninja-build libsqlite3-dev
+
+      - name: Configure CMake
+        env:
+          CC: ${{ matrix.compiler == 'clang' && 'clang' || 'gcc' }}
+          CXX: ${{ matrix.compiler == 'clang' && 'clang++' || 'g++' }}
+        run: |
+          cmake -S . -B build -G Ninja -DTUSHO_BUILD_TESTS=ON -DTUSHO_ENABLE_WARNINGS_AS_ERRORS=ON
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Run C++ tests
+        run: ctest --test-dir build --output-on-failure
+
+  cpp-static-analysis:
+    name: C++ Static Analysis
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install static analysis dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang clang-tidy clang-format cppcheck ninja-build libsqlite3-dev
+
+      - name: Validate formatting
+        run: |
+          find include src tests -type f \( -name '*.hpp' -o -name '*.cpp' \) -print0 | xargs -0 clang-format --dry-run --Werror
+
+      - name: Configure CMake for clang-tidy
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          cmake -S . -B build -G Ninja -DTUSHO_BUILD_TESTS=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Run cppcheck
+        run: |
+          cppcheck --std=c++20 --enable=all --inconclusive --error-exitcode=1 --inline-suppr --suppress=missingIncludeSystem include src tests
+
+      - name: Run clang-tidy
+        run: |
+          clang-tidy -p build \
+            src/main.cpp \
+            src/application/crawler_application.cpp \
+            src/database/file_system_catalog_repository.cpp \
+            src/database/sqlite_database_connection.cpp \
+            src/filesystem/file_system_crawler.cpp \
+            src/logging/structured_logger.cpp \
+            tests/unit/structured_logger_tests.cpp \
+            tests/integration/file_system_crawler_integration_tests.cpp
+
+  cpp-sanitizers:
+    name: C++ Sanitizers
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install sanitizer dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build libsqlite3-dev
+
+      - name: Configure sanitizer build
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          cmake -S . -B build -G Ninja -DTUSHO_BUILD_TESTS=ON -DTUSHO_ENABLE_SANITIZERS=ON
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Run C++ tests with sanitizers
+        run: ctest --test-dir build --output-on-failure
+
+  cpp-coverage:
+    name: C++ Coverage
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install coverage dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ninja-build libsqlite3-dev gcovr
+
+      - name: Configure coverage build
+        env:
+          CC: gcc
+          CXX: g++
+        run: |
+          cmake -S . -B build -G Ninja -DTUSHO_BUILD_TESTS=ON -DTUSHO_ENABLE_COVERAGE=ON
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Generate coverage report
+        run: |
+          mkdir -p coverage
+          gcovr --root . --print-summary --xml coverage/cpp-coverage.xml --html-details coverage/cpp-coverage.html --fail-under-line 85
+
+      - name: Upload C++ coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpp-coverage
+          path: coverage/
+
+  php-quality:
+    name: PHP Quality
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: xdebug
+          extensions: dom, libxml, pdo, pdo_sqlite, simplexml
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Validate PHP syntax
+        run: |
+          find web -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Run PHP coding standards
+        run: composer run lint:php
+
+      - name: Run PHP static analysis
+        run: composer run analyse:php
+
+      - name: Run PHP tests with coverage
+        run: |
+          mkdir -p coverage
+          vendor/bin/phpunit --configuration phpunit.xml.dist --coverage-clover coverage/php-clover.xml
+          php scripts/enforce_php_coverage_threshold.php coverage/php-clover.xml 85
+
+      - name: Upload PHP coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: php-coverage
+          path: coverage/
+
+  repository-hygiene:
+    name: Repository Hygiene
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install hygiene dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          npm install --global markdownlint-cli
+          python -m pip install --upgrade pip
+          pip install yamllint
+
+      - name: Lint Markdown
+        run: |
+          find . -type f -name '*.md' -print0 | xargs -0 markdownlint
+
+      - name: Lint YAML
+        run: yamllint .
+
+      - name: Lint shell scripts when present
+        run: |
+          if find . -type f -name '*.sh' | grep -q .; then
+            find . -type f -name '*.sh' -print0 | xargs -0 shellcheck
+          else
+            echo "No shell scripts detected."
+          fi
+
+      - name: Lint GitHub Actions
+        uses: rhysd/actionlint@v1
+
+      - name: Scan for secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  documentation-build:
+    name: Documentation Build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install documentation dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+          python -m pip install --upgrade pip
+          pip install mkdocs mkdocs-material
+
+      - name: Build Doxygen API reference
+        run: doxygen docs/Doxyfile
+
+      - name: Build MkDocs site
+        run: mkdocs build --strict
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-site
+          path: site/

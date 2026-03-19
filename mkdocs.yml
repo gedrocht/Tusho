@@ -1,0 +1,27 @@
+site_name: Tusho Documentation
+site_description: Beginner-friendly documentation for the Tusho Linux file catalog project
+site_url: https://gedrocht.github.io/Tusho/
+theme:
+  name: material
+  palette:
+    primary: brown
+    accent: deep orange
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Tutorials:
+      - First Crawl: tutorials/first-crawl.md
+      - Web Search: tutorials/web-search.md
+  - Architecture: architecture.md
+  - Database Schema: database-schema.md
+  - Logging and Operations: logging-and-operations.md
+  - Testing and Quality: testing-and-quality.md
+  - External Libraries: external-libraries.md
+  - API Reference: api-reference.md
+  - Wiki: wiki.md
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - fenced_code
+  - tables
