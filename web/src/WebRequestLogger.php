@@ -19,8 +19,22 @@ final class WebRequestLogger
     public function log(string $message, array $contextFields = []): void
     {
         $logDirectoryPath = dirname($this->logFilePath);
+        $directoryAlreadyExists = is_dir($logDirectoryPath);
+        $directoryCreationSucceeded = false;
 
-        if (!is_dir($logDirectoryPath) && !mkdir($logDirectoryPath, 0775, true) && !is_dir($logDirectoryPath)) {
+        if (!$directoryAlreadyExists) {
+            set_error_handler(static function (): bool {
+                return true;
+            });
+
+            try {
+                $directoryCreationSucceeded = mkdir($logDirectoryPath, 0775, true);
+            } finally {
+                restore_error_handler();
+            }
+        }
+
+        if (!$directoryAlreadyExists && !$directoryCreationSucceeded && !is_dir($logDirectoryPath)) {
             throw new \RuntimeException('The web log directory could not be created.');
         }
 
