@@ -144,7 +144,7 @@ jobs:
           gcovr --root . --print-summary --xml coverage/cpp-coverage.xml --html-details coverage/cpp-coverage.html --fail-under-line 85
 
       - name: Upload C++ coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cpp-coverage
           path: coverage/
@@ -185,7 +185,7 @@ jobs:
           php scripts/enforce_php_coverage_threshold.php coverage/php-clover.xml 85
 
       - name: Upload PHP coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: php-coverage
           path: coverage/
@@ -268,7 +268,7 @@ jobs:
         run: mkdocs build --strict
 
       - name: Upload documentation artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docs-site
           path: site/
